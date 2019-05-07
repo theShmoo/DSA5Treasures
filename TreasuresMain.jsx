@@ -10,6 +10,8 @@ import DSAItemList from '../controls/DSAItemList';
 import DSAInfoBox from '../controls/DSAInfoBox';
 import { DSAGrid, DSAGridItem, DSAGridRow} from '../controls/DSAGrid';
 
+import {pickRandom} from '../utils/RandomUtils';
+
 import {TreasureProbabilities,
   TreasureTypes,
   TreasureMisc,
@@ -49,28 +51,12 @@ class TreasuresMain extends React.Component {
     this.setState({ open: false });
   };
 
-  pickRandom(to_pick) {
-    // to pick contains an array with objects
-    // each object needs to have a property "p" with a probability between 0 and 1
-    // the sum of all p needs to be 1
-
-    const r = Math.random();
-    let sum_p = 0;
-    for(let i = 0; i < to_pick.length; i++){
-      sum_p += to_pick[i].p;
-      if(r < sum_p)
-        return to_pick[i];
-    }
-    // we should never come here.
-    return undefined;
-  }
-
   karatDescription() {
-    return " mit " + this.pickRandom(GemKarat).amount + " Karat";
+    return " mit " + pickRandom(GemKarat).amount + " Karat";
   }
 
   getRandomGem() {
-    return this.pickRandom(TreasureTypes.gems).description + this.karatDescription();
+    return pickRandom(TreasureTypes.gems).description + this.karatDescription();
   }
 
   replaceGem(description) {
@@ -83,13 +69,13 @@ class TreasuresMain extends React.Component {
 
   getRandomTreasure = () => {
 
-    const picked = this.pickRandom(TreasureProbabilities);
+    const picked = pickRandom(TreasureProbabilities);
 
-    const types = picked.types.map((t) => this.pickRandom(TreasureTypes[t]));
+    const types = picked.types.map((t) => pickRandom(TreasureTypes[t]));
 
     const additions = picked.types.map((t) => {
       if(t === "jewellery")
-        return " aus " + this.pickRandom(JewelleryMaterial).description;
+        return " aus " + pickRandom(JewelleryMaterial).description;
       else if(t === "gems")
         return this.karatDescription();
       else
@@ -110,11 +96,11 @@ class TreasuresMain extends React.Component {
     let all_picked = [];
     const p = Math.floor((Math.random() * 6) + 1);
     for(let i = 0; i < p; ++i) {
-      all_picked.push(this.pickRandom(TreasureMisc));
+      all_picked.push(pickRandom(TreasureMisc));
     }
 
     const typeDescriptions = all_picked.map((t) => ({
-        "value": this.replaceGem(t.description) + " aus " + this.pickRandom(JewelleryMaterial).description,
+        "value": this.replaceGem(t.description) + " aus " + pickRandom(JewelleryMaterial).description,
     }));
 
     return {
@@ -143,7 +129,7 @@ class TreasuresMain extends React.Component {
         </DSAGridRow>;
     }
     else {
-      return <></>;
+      return "";
     }
   }
 
