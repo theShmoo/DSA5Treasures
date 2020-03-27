@@ -10,7 +10,7 @@ import DSAItemList from '../controls/DSAItemList';
 import DSAInfoBox from '../controls/DSAInfoBox';
 import { DSAGrid, DSAGridItem, DSAGridRow} from '../controls/DSAGrid';
 
-import {pickRandom} from '../utils/RandomUtils';
+import {pickRandom, createSeed} from '../utils/RandomUtils';
 
 import {TreasureProbabilities,
   TreasureTypes,
@@ -51,39 +51,37 @@ class TreasuresMain extends React.Component {
     this.setState({ open: false });
   };
 
-  karatDescription() {
-    return " mit " + pickRandom(GemKarat).amount + " Karat";
+  karatDescription(seed) {
+    return " mit " + pickRandom(GemKarat, seed).amount + " Karat";
   }
 
-  getRandomGem() {
-    return pickRandom(TreasureTypes.gems).description + this.karatDescription();
+  getRandomGem(seed) {
+    return pickRandom(TreasureTypes.gems, seed).description + this.karatDescription(seed);
   }
 
-  replaceGem(description) {
-    const numGems = Math.floor((Math.random() * 6) + 1);
-    let gems = numGems + " " + this.getRandomGem();
+  replaceGem(description, seed) {
+    const numGems = Math.floor((seed() * 6) + 1);
+    let gems = numGems + " " + this.getRandomGem(seed);
 
     description = description.replace(/1W6 Juwelen/g, gems);
-    return description.replace(/Juwel/g, this.getRandomGem());
+    return description.replace(/Juwel/g, this.getRandomGem(seed));
   }
 
   getRandomTreasure = () => {
-
-    const picked = pickRandom(TreasureProbabilities);
-
-    const types = picked.types.map((t) => pickRandom(TreasureTypes[t]));
-
+    let seed = createSeed();
+    const picked = pickRandom(TreasureProbabilities, seed);
+    const types = picked.types.map((t) => pickRandom(TreasureTypes[t], seed));
     const additions = picked.types.map((t) => {
       if(t === "jewellery")
-        return " aus " + pickRandom(JewelleryMaterial).description;
+        return " aus " + pickRandom(JewelleryMaterial, seed).description;
       else if(t === "gems")
-        return this.karatDescription();
+        return this.karatDescription(seed);
       else
         return ""
     });
 
     const typeDescriptions = types.map((t, i) => ({
-        "value": this.replaceGem(t.description) + additions[i]
+        "value": this.replaceGem(t.description, seed) + additions[i]
     }));
 
     return {
@@ -93,14 +91,15 @@ class TreasuresMain extends React.Component {
   }
 
   getRandomObject = () => {
+    let seed = createSeed();
     let all_picked = [];
     const p = Math.floor((Math.random() * 6) + 1);
     for(let i = 0; i < p; ++i) {
-      all_picked.push(pickRandom(TreasureMisc));
+      all_picked.push(pickRandom(TreasureMisc, seed));
     }
 
     const typeDescriptions = all_picked.map((t) => ({
-        "value": this.replaceGem(t.description) + " aus " + pickRandom(JewelleryMaterial).description,
+        "value": this.replaceGem(t.description, seed) + " aus " + pickRandom(JewelleryMaterial, seed).description,
     }));
 
     return {
