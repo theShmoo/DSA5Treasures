@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import withWidth from '@material-ui/core/withWidth';
 
 import DSAMediaCard from '../controls/DSAMediaCard';
 import DSAButton from '../controls/DSAButton';
@@ -174,4 +173,4 @@ TreasuresMain.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withWidth()(withStyles(styles)(TreasuresMain));
+export default withStyles(styles)(TreasuresMain);
